@@ -1,9 +1,11 @@
 import userService from "../service/userService";
 const handleHelloWorld = (req, res) => {
-    return res.render("home.pug", { name: "qtt" });
+    return res.render("home.ejs", { name: "qtt" });
 };
-const handleUserPage = (req, res) => {
-    return res.render("user.pug");
+const handleUserPage = async (req, res) => {
+    let userList = await userService.getUserList();
+    console.log(userList);
+    return res.render("user.ejs", { userList });
 };
 const handleCreateNewUser = (req, res) => {
     let { email, password, username } = req.body;
