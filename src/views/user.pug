@@ -14,7 +14,9 @@ html(lang="en")
             form(method="POST" action="/users/create-user")
                 div(class="container")
                     div(class="row")
-                        div(class="mb-3 mt-3 col-6")
+                        div(class="pt-3")
+                            h3 Create a new user:
+                        div(class="mb-3 col-6")
                             label(class="form-label" for="email") Email address
                             //- với viewengine backend dùng thuộc tính name cho input
                             input(class="form-control" id="email" type="email" name="email" aria-describedby="emailHelp" required)
