@@ -16,11 +16,9 @@ const handleDeleteUser = async (req, res) => {
     return res.redirect("/user");
 };
 const getUpdateUserPage = async (req, res) => {
-    let user = await userService.getUserDataById(req.params.id);
+    let user = await userService.getUserById(req.params.id);
     let userData = {};
-    if (user && user.length > 0) {
-        userData = user[0];
-    }
+    userData = user;
     return res.render("user-update.ejs", { userData });
 };
 const handleUpdateUser = async (req, res) => {

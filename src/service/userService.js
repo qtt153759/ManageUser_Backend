@@ -1,113 +1,63 @@
 import bcrypt from "bcryptjs";
+import mysql from "mysql2/promise";
+import bluebird from "bluebird";
+import db from "../models/index";
+
+// create the connection, specify bluebird as Promise
+
 const salt = bcrypt.genSaltSync(10);
 
-import mysql from "mysql2/promise";
-
-// import mysql from "mysql2";
-// const connection = mysql.createConnection({
-//     host: "127.0.0.1",
-//     port: "3308",
-//     user: "qtt153759",
-//     password: "truong157359",
-//     database: "jwt",
-// });
-const hashPassword = (password) => {
-    let hashPassword = bcrypt.hashSync(password, salt);
+const hashUserPassword = (userPassword) => {
+    let hashPassword = bcrypt.hashSync(userPassword, salt);
     return hashPassword;
 };
+
 const createNewUser = async (email, password, username) => {
-    const connection = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "qtt153759",
-        database: "jwt",
-        password: "truong157359",
-        port: "3308",
-    });
-    let hashPass = hashPassword(password);
+    let hashPass = hashUserPassword(password);
     try {
-        const [rows, fields] = await connection.execute(
-            "INSERT INTO users (email, password, username) VALUES (?,?,?)",
-            [email, hashPass, username]
-        );
-        return rows;
-    } catch (e) {
-        console.log(e);
+        await db.User.create({
+            username: username,
+            email: email,
+            password: hashPass,
+        });
+    } catch (error) {
+        console.log(">>> check error: ", error);
     }
 };
+
 const getUserList = async () => {
-    const connection = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "qtt153759",
-        database: "jwt",
-        password: "truong157359",
-        port: "3308",
-    });
-    try {
-        const [rows, fields] = await connection.execute("SELECT * FROM users");
-        return rows;
-    } catch (e) {
-        console.log(e);
-    }
+    let users = [];
+    users = await db.User.findAll();
+    return users;
 };
-const deleteUser = async (id) => {
-    const connection = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "qtt153759",
-        database: "jwt",
-        password: "truong157359",
-        port: "3308",
+
+const deleteUser = async (userId) => {
+    await db.User.destroy({
+        where: { id: userId },
     });
-    try {
-        const [rows, fields] = await connection.execute(
-            "DELETE FROM users WHERE id=?",
-            [id]
-        );
-        return rows;
-    } catch (e) {
-        console.log(e);
-    }
 };
-const getUserDataById = async (id) => {
-    const connection = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "qtt153759",
-        database: "jwt",
-        password: "truong157359",
-        port: "3308",
+
+const getUserById = async (id) => {
+    let user = {};
+    user = await db.User.findOne({
+        where: { id: id },
     });
-    try {
-        const [rows, fields] = await connection.execute(
-            "SELECT * FROM users where id=?",
-            [id]
-        );
-        return rows;
-    } catch (e) {
-        console.log(e);
-    }
+    return user.get({ plain: true });
 };
+
 const updateUserInfor = async (email, username, id) => {
-    const connection = await mysql.createConnection({
-        host: "127.0.0.1",
-        user: "qtt153759",
-        database: "jwt",
-        password: "truong157359",
-        port: "3308",
-    });
-    try {
-        const [rows, fields] = await connection.execute(
-            "UPDATE users SET email = ? , username = ? WHERE id = ?",
-            [email, username, id]
-        );
-        return rows;
-    } catch (e) {
-        console.log(e);
-    }
+    await db.User.update(
+        { email: email, username: username },
+        {
+            where: { id: id },
+        }
+    );
 };
+
 module.exports = {
-    hashPassword,
     createNewUser,
     getUserList,
     deleteUser,
-    getUserDataById,
+    getUserById,
     updateUserInfor,
 };
