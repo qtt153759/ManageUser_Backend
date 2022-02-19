@@ -1,10 +1,11 @@
 import db from "../models/index";
+import { hashUserPassword, checkEmailExist, checkPhoneExist } from "./loginRegisterService";
 const getAllUser = async () => {
     let data = { EM: "", EC: "", DT: "" };
     try {
         let users = await db.User.findAll({
             attributes: ["id", "username", "email", "phone", "sex"],
-            include: { model: db.Group, attributes: ["name", "description"] },
+            include: { model: db.Group, attributes: ["name", "description", "id"] },
         });
         if (users) {
             // let data = users.get({ plain: true });
@@ -34,6 +35,9 @@ const getUserWithPagination = async (page, limit) => {
         const { count, rows } = await db.User.findAndCountAll({
             offset: +offset,
             limit: +limit,
+            attributes: ["id", "username", "email", "phone", "address", "sex"],
+            include: { model: db.Group, attributes: ["name", "description", "id"] },
+            order: [["id", "DESC"]],
         });
         let totalPages = Math.ceil(count / limit);
         let data = {
@@ -57,9 +61,37 @@ const getUserWithPagination = async (page, limit) => {
 };
 const createFunction = async (data) => {
     try {
-        await db.User.create(data);
+        let isEmailExist = await checkEmailExist(data.email);
+        if (isEmailExist) {
+            return {
+                EM: "The email is already exist",
+                EC: 1,
+            };
+        }
+        let isPhoneExist = await checkPhoneExist(data.phone);
+        if (isPhoneExist) {
+            return {
+                EM: "The phone is already exist",
+                EC: 1,
+            };
+        }
+        let hashPassword = hashUserPassword(data.password);
+        await db.User.create({
+            ...data,
+            password: hashPassword,
+        });
+        return {
+            EM: "Create new user success",
+            EC: 0,
+            DT: [],
+        };
     } catch (e) {
         console.log(e);
+        return {
+            EM: "Something wrongs with services",
+            EC: 1,
+            DT: [],
+        };
     }
 };
 const updateFunction = async (data) => {
@@ -76,19 +108,37 @@ const updateFunction = async (data) => {
         console.log(e);
     }
 };
-const deleteFunction = async (id) => {
+const deleteUser = async (id) => {
     try {
-        await db.User.delete({
+        let user = await db.User.findOne({
             where: { id: id },
         });
+        if (!user) {
+            return {
+                EM: "Not found user",
+                EC: 2,
+                DT: "",
+            };
+        }
+        await user.destroy();
+        return {
+            EM: "Delete success",
+            EC: 0,
+            DT: "",
+        };
     } catch (e) {
         console.log(e);
+        return {
+            EM: "Something wrong from database ",
+            EC: 1,
+            DT: "",
+        };
     }
 };
 module.exports = {
     getAllUser,
     createFunction,
     updateFunction,
-    deleteFunction,
+    deleteUser,
     getUserWithPagination,
 };

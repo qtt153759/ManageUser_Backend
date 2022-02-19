@@ -24,8 +24,14 @@ const readFunction = async (req, res) => {
         });
     }
 };
-const createFunction = async () => {
+const createFunction = async (req, res) => {
     try {
+        let data = await userApiService.createFunction(req.body);
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
     } catch (e) {
         console.log(e);
         return res.status(200).json({
@@ -37,6 +43,12 @@ const createFunction = async () => {
 };
 const updateFunction = async () => {
     try {
+        let data = await userApiService.updateUser(req.body);
+        return res.stauts(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
     } catch (e) {
         console.log(e);
         return res.status(200).json({
@@ -46,8 +58,15 @@ const updateFunction = async () => {
         });
     }
 };
-const deleteFunction = async () => {
+const deleteFunction = async (req, res) => {
     try {
+        let { id } = req.body;
+        let data = await userApiService.deleteUser(id);
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
     } catch (e) {
         console.log(e);
         return res.status(200).json({

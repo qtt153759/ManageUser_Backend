@@ -1,6 +1,6 @@
 import db from "../models/index";
-import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
+import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
 
 const hashUserPassword = (userPassword) => {
@@ -68,10 +68,7 @@ const handleUserLogin = async (rawData) => {
     try {
         let user = await db.User.findOne({
             where: {
-                [Op.or]: [
-                    { email: rawData.valueLogin },
-                    { phone: rawData.valueLogin },
-                ],
+                [Op.or]: [{ email: rawData.valueLogin }, { phone: rawData.valueLogin }],
             },
         });
         if (user && checkPassword(rawData.password, user.password)) {
@@ -98,4 +95,7 @@ const handleUserLogin = async (rawData) => {
 module.exports = {
     handleUserLogin,
     registerNewUser,
+    hashUserPassword,
+    checkEmailExist,
+    checkPhoneExist,
 };
