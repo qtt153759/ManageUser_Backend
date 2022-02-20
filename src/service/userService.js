@@ -21,7 +21,7 @@ const createNewUser = async (email, password, username) => {
             password: hashPass,
         });
     } catch (error) {
-        console.log(">>> check error: ", error);
+        console.log(error);
     }
 };
 

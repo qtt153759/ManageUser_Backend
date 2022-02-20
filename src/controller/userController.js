@@ -26,7 +26,7 @@ const readFunction = async (req, res) => {
 };
 const createFunction = async (req, res) => {
     try {
-        let data = await userApiService.createFunction(req.body);
+        let data = await userApiService.createUser(req.body);
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
@@ -41,10 +41,10 @@ const createFunction = async (req, res) => {
         });
     }
 };
-const updateFunction = async () => {
+const updateFunction = async (req, res) => {
     try {
         let data = await userApiService.updateUser(req.body);
-        return res.stauts(200).json({
+        return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
             DT: data.DT,

@@ -59,7 +59,7 @@ const getUserWithPagination = async (page, limit) => {
         };
     }
 };
-const createFunction = async (data) => {
+const createUser = async (data) => {
     try {
         let isEmailExist = await checkEmailExist(data.email);
         if (isEmailExist) {
@@ -94,18 +94,44 @@ const createFunction = async (data) => {
         };
     }
 };
-const updateFunction = async (data) => {
+const updateUser = async (data) => {
     try {
+        const { id, address, username, groupId, sex } = data;
+        if (!id || !username || !groupId || !sex) {
+            return {
+                EM: "Missing parameter",
+                EC: 2,
+                DT: "",
+            };
+        }
         let user = await db.User.findOne({
             where: { id: data.id },
         });
-        if (user) {
-            user.save({});
-        } else {
-            //not found
+        if (!user) {
+            return {
+                EM: "Not found",
+                EC: 1,
+                DT: [],
+            };
         }
+        await user.update({
+            username: username,
+            address: address,
+            groupId: +groupId,
+            sex: sex,
+        });
+        return {
+            EM: "Edit user success",
+            EC: 0,
+            DT: [],
+        };
     } catch (e) {
         console.log(e);
+        return {
+            EM: "Something wrongs with services",
+            EC: 1,
+            DT: [],
+        };
     }
 };
 const deleteUser = async (id) => {
@@ -137,8 +163,8 @@ const deleteUser = async (id) => {
 };
 module.exports = {
     getAllUser,
-    createFunction,
-    updateFunction,
+    createUser,
+    updateUser,
     deleteUser,
     getUserWithPagination,
 };

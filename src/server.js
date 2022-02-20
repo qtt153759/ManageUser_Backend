@@ -5,6 +5,7 @@ import configViewEngine from "./config/viewEngine";
 import initWebRoutes from "./routes/web";
 import initApiRoutes from "./routes/api";
 import cors from "cors";
+import { createJWT, verifyToken } from "./middleware/JWTAction";
 require("dotenv").config();
 const app = express();
 
@@ -19,7 +20,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //test connection to db
 connection();
-
+//test jwt
+createJWT();
+console.log(
+    verifyToken(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicXR0MTUzNzU5IiwiYWRkcmVzcyI6Imhhbm9pIiwiaWF0IjoxNjQ1MzQ0OTIwfQ.VMkf2rA-GoDB6csDA-i-V-mAFDxtlLgZNxTYyealRkI"
+    )
+);
 // init web routes
 initWebRoutes(app);
 initApiRoutes(app);
