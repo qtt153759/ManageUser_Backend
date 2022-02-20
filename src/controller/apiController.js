@@ -39,6 +39,8 @@ const handleLogin = async (req, res) => {
             });
         }
         let data = await loginRegisterService.handleUserLogin(req.body);
+        //everytime login=>set cookie, httpOnly to avoid crawl cookie from client
+        res.cookie("jwt", data.DT.access_token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,

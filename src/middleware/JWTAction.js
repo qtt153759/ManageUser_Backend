@@ -1,15 +1,13 @@
 import { config } from "bluebird";
 import jwt from "jsonwebtoken";
 require("dotenv").config();
-const createJWT = () => {
-    let payload = { name: "qtt153759", address: "hanoi" };
+const createJWT = (payload) => {
     let key = process.env.JWT_SECRET;
     let token = null;
     try {
         token = jwt.sign(payload, key);
-        console.log(token);
     } catch (e) {
-        console.log(err);
+        console.log(e);
     }
     return token;
 };
