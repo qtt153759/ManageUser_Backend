@@ -6,7 +6,7 @@ const createJWT = (payload) => {
     let key = process.env.JWT_SECRET;
     let token = null;
     try {
-        token = jwt.sign(payload, key);
+        token = jwt.sign(payload, key, { expiresIn: process.env.JWT_EXPIRES_IN });
     } catch (e) {
         console.log(e);
     }
@@ -23,11 +23,18 @@ const verifyToken = (token) => {
     }
     return data;
 };
+const getTokenFromHeader = (req) => {
+    if (req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer") {
+        return req.headers.authorization.split(" ")[1];
+    }
+    return null;
+};
 const checkUserJWT = (req, res, next) => {
     if (nonSecurePaths.includes(req.path)) return next();
-    let cookies = req.cookies;
-    if (cookies && cookies.jwt) {
-        let token = cookies.jwt;
+    const cookies = req.cookies;
+    const tokenFromHeader = getTokenFromHeader(req);
+    if ((cookies && cookies.jwt) || tokenFromHeader) {
+        let token = cookies && cookies.jwt ? cookies.jwt : tokenFromHeader;
         let decoded = verifyToken(token);
         if (decoded) {
             // Cách gán vào biến req
@@ -43,7 +50,7 @@ const checkUserJWT = (req, res, next) => {
     });
 };
 const checkUserPermission = (req, res, next) => {
-    if (nonSecurePaths.includes(req.path)) return next();
+    if (nonSecurePaths.includes(req.path) || req.path === "/account") return next();
     if (req.user) {
         let email = req.user.email;
         let roles = req.user.groupWithRoles.Roles;

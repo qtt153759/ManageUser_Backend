@@ -8,10 +8,11 @@ const router = express.Router();
 const initApiRoutes = (app) => {
     // tất cả các route phải check 2 cái middleware này
     router.all("*", checkUserJWT, checkUserPermission);
-
+    // Những account này ko phải check checkUserJWT, checkUserPermission do được quy đinh trong JWTAction.js
     router.get("/", (req, res) => res.send("hello"));
     router.post("/register", apiController.handleRegister);
     router.post("/login", apiController.handleLogin);
+    router.get("/account", apiController.getUserAccount);
 
     router.get("/user/read", userController.readFunction);
     router.post("/user/create", userController.createFunction);

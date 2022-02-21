@@ -39,13 +39,15 @@ const handleLogin = async (req, res) => {
             });
         }
         let data = await loginRegisterService.handleUserLogin(req.body);
-        //everytime login=>set cookie, httpOnly to avoid crawl cookie from client
-        res.cookie("jwt", data.DT.access_token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
-        return res.status(200).json({
-            EM: data.EM,
-            EC: data.EC,
-            DT: data.DT,
-        });
+        if (data && data.DT && data.DT.access_token) {
+            //everytime login=>set cookie, httpOnly to avoid crawl cookie from client
+            res.cookie("jwt", data.DT.access_token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT,
+            });
+        }
     } catch (e) {
         console.log(e);
         return res.status(200).json({
@@ -55,7 +57,20 @@ const handleLogin = async (req, res) => {
         });
     }
 };
+const getUserAccount = async (req, res) => {
+    return res.status(200).json({
+        EM: "OK",
+        EC: 0,
+        DT: {
+            access_token: req.token,
+            groupWithRoles: req.user.groupWithRoles,
+            email: req.user.email,
+            username: req.user.username,
+        },
+    });
+};
 module.exports = {
+    getUserAccount,
     handleRegister,
     handleLogin,
 };
