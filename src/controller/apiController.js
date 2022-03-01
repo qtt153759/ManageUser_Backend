@@ -57,6 +57,23 @@ const handleLogin = async (req, res) => {
         });
     }
 };
+const handleLogout = async (req, res) => {
+    try {
+        res.clearCookie("jwt"); //ko thể clear cookie từ frontend vì httpOnly: true => clear từ server
+        return res.status(200).json({
+            EM: "Clear cookies done!",
+            EC: 0,
+            DT: "",
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            EM: "error from server",
+            EC: "-1",
+            DT: "",
+        });
+    }
+};
 const getUserAccount = async (req, res) => {
     return res.status(200).json({
         EM: "OK",
@@ -72,5 +89,6 @@ const getUserAccount = async (req, res) => {
 module.exports = {
     getUserAccount,
     handleRegister,
+    handleLogout,
     handleLogin,
 };

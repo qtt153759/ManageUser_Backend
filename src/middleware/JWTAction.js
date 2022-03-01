@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 require("dotenv").config();
 // khai báo những route không cần check authen vs author
-const nonSecurePaths = ["/", "/login", "/register"];
+const nonSecurePaths = ["/", "/logout", "/login", "/register"];
 const createJWT = (payload) => {
     let key = process.env.JWT_SECRET;
     let token = null;
