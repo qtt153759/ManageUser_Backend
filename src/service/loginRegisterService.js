@@ -1,6 +1,6 @@
 import db from "../models/index";
 import { Op } from "sequelize";
-import { getGroupWithRoles } from "./JWTService";
+import { getRolesWithGroup } from "./groupService";
 import bcrypt from "bcryptjs";
 import { createJWT } from "../middleware/JWTAction";
 const salt = bcrypt.genSaltSync(10);
@@ -75,11 +75,11 @@ const handleUserLogin = async (rawData) => {
             },
         });
         if (user && checkPassword(rawData.password, user.password)) {
-            let groupWithRoles = await getGroupWithRoles(user);
+            let res = await getRolesWithGroup(user.groupId);
             let payload = {
                 email: user.email,
                 username: user.username,
-                groupWithRoles,
+                groupWithRoles: res.DT,
             };
             let token = createJWT(payload);
             return {
@@ -87,7 +87,7 @@ const handleUserLogin = async (rawData) => {
                 EC: 0,
                 DT: {
                     access_token: token,
-                    groupWithRoles: groupWithRoles,
+                    groupWithRoles: res.DT,
                     email: user.email,
                     username: user.username,
                 },

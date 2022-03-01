@@ -22,6 +22,8 @@ const initApiRoutes = (app) => {
     router.delete("/user/delete", userController.deleteFunction);
     //gắn quyền qua đường link
     router.get("/role/read", roleController.readFunction);
+    router.get("/role/by-group/:id", groupController.getRolesWithGroup);
+    router.post("/role/assignToGroup", groupController.assignToGroup);
     router.post("/role/create", roleController.createFunction);
     // router.put("/role/update", roleController.updateFunction);
     router.delete("/role/delete", roleController.deleteFunction);
